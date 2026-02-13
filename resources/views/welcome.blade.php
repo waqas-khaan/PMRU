@@ -56,24 +56,20 @@
                             </div>
                         </li>
                     </ul>
-                    @if (Route::has('auth.login'))
-                        <div class="flex flex-wrap items-center gap-3 text-sm leading-normal">
-                            <a
-                                href="{{ route('auth.login') }}"
-                                class="inline-block px-5 py-1.5 bg-[#1b1b18] text-white rounded-sm border border-black hover:bg-black hover:border-black dark:bg-[#eeeeec] dark:border-[#eeeeec] dark:text-[#1C1C1A] dark:hover:bg-white dark:hover:border-white"
-                            >
-                                Log in
-                            </a>
-                            @if (Route::has('auth.register'))
-                                <a
-                                    href="{{ route('auth.register') }}"
-                                    class="inline-block px-5 py-1.5 border border-[#19140035] text-[#1b1b18] rounded-sm hover:border-[#1915014a] dark:border-[#3E3E3A] dark:hover:border-[#62605b] dark:text-[#EDEDEC]"
-                                >
-                                    Register
-                                </a>
-                            @endif
-                        </div>
-                    @endif
+                    <div class="flex flex-wrap items-center gap-3 text-sm leading-normal">
+                        <a
+                            href="{{ route('auth.login') }}"
+                            class="inline-block px-5 py-1.5 border border-[#19140035] text-[#1b1b18] rounded-sm hover:border-[#1915014a] dark:border-[#3E3E3A] dark:hover:border-[#62605b] dark:text-[#EDEDEC]"
+                        >
+                            Log in
+                        </a>
+                        <a
+                            href="{{ route('auth.register') }}"
+                            class="inline-block px-5 py-1.5 border border-[#19140035] text-[#1b1b18] rounded-sm hover:border-[#1915014a] dark:border-[#3E3E3A] dark:hover:border-[#62605b] dark:text-[#EDEDEC]"
+                        >
+                            Register
+                        </a>
+                    </div>
                 </div>
                 <div class="bg-[#fff2f2] dark:bg-[#1D0002] relative lg:-ml-px -mb-px lg:mb-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg aspect-[335/376] lg:aspect-auto w-full lg:w-[438px] shrink-0 overflow-hidden">
                     {{-- Laravel Logo --}}
