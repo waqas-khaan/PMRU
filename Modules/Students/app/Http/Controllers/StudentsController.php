@@ -5,6 +5,12 @@ namespace Modules\Students\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
+use Modules\Students\Models\Guardian;
+use Modules\Students\Models\Student;
+
+
 class StudentsController extends Controller
 {
     /**
@@ -12,7 +18,12 @@ class StudentsController extends Controller
      */
     public function index()
     {
+
+        $students = Schema::connection('mysql_students')->hasTable('students') ? Student::orderBy('id')->get() : collect();
+        return view('students::index', compact('students'));
+
         return view('students::index');
+
     }
 
     /**
@@ -20,13 +31,55 @@ class StudentsController extends Controller
      */
     public function create()
     {
+
+        $guardians = Schema::connection('mysql_students')->hasTable('guardians') ? Guardian::orderBy('id')->get() : collect();
+        return view('students::create', compact('guardians'));
+
         return view('students::create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'full_name' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'date_of_birth' => ['nullable', 'date'],
+            'gender' => ['nullable', 'in:male,female,other'],
+            'address' => ['nullable', 'string'],
+            'guardian_id' => ['nullable', Rule::exists(Guardian::class, 'id')],
+            'class' => ['nullable', 'string', 'max:50'],
+            'section' => ['nullable', 'string', 'max:50'],
+            'enrollment_date' => ['nullable', 'date'],
+        ]);
+
+        $columns = Schema::connection('mysql_students')->getColumnListing('students');
+        $data = array_intersect_key($validated, array_flip($columns));
+
+        // If table has first_name/last_name (required), derive from full_name so insert doesn't fail
+        $needsSplit = (in_array('first_name', $columns, true) && ! isset($data['first_name']))
+            || (in_array('last_name', $columns, true) && ! isset($data['last_name']));
+        if ($needsSplit) {
+            $parts = preg_split('/\s+/', trim($validated['full_name'] ?? ''), 2);
+            if (in_array('first_name', $columns, true)) {
+                $data['first_name'] = $parts[0] ?? '';
+            }
+            if (in_array('last_name', $columns, true)) {
+                $data['last_name'] = $parts[1] ?? '';
+            }
+        }
+
+        Student::create($data);
+
+        return redirect()->route('students.index')->with('success', 'Student added successfully.');
+    }
+
     public function store(Request $request) {}
+ main
 
     /**
      * Show the specified resource.
