@@ -4,10 +4,12 @@ namespace Modules\Students\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Modules\Students\Models\Guardian;
 use Modules\Students\Models\Student;
+
 
 class StudentsController extends Controller
 {
@@ -16,8 +18,12 @@ class StudentsController extends Controller
      */
     public function index()
     {
+
         $students = Schema::connection('mysql_students')->hasTable('students') ? Student::orderBy('id')->get() : collect();
         return view('students::index', compact('students'));
+
+        return view('students::index');
+
     }
 
     /**
@@ -25,13 +31,17 @@ class StudentsController extends Controller
      */
     public function create()
     {
+
         $guardians = Schema::connection('mysql_students')->hasTable('guardians') ? Guardian::orderBy('id')->get() : collect();
         return view('students::create', compact('guardians'));
+
+        return view('students::create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -67,6 +77,9 @@ class StudentsController extends Controller
 
         return redirect()->route('students.index')->with('success', 'Student added successfully.');
     }
+
+    public function store(Request $request) {}
+ main
 
     /**
      * Show the specified resource.
