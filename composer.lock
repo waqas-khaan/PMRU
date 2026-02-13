@@ -8,7 +8,12 @@
     "content-hash": "ed11fd35e692d1c471044e0d66fc8237",
 =======
     "content-hash": "4526decd725eac1c0a43f5e1918282fa",
+<<<<<<< HEAD
 >>>>>>> 26b2232 (Initial commit with Students and Auth modules)
+=======
+    "content-hash": "ed11fd35e692d1c471044e0d66fc8237",
+    "content-hash": "4526decd725eac1c0a43f5e1918282fa",
+>>>>>>> 01003fd (Test)
     "packages": [
         {
             "name": "brick/math",
