@@ -73,7 +73,8 @@ class StudentsController extends Controller
      */
     public function show($id)
     {
-        return view('students::show');
+        $student = Student::on('mysql_students')->findOrFail($id);
+        return view('students::show', compact('student'));
     }
 
     /**
@@ -81,16 +82,58 @@ class StudentsController extends Controller
      */
     public function edit($id)
     {
-        return view('students::edit');
+        $student = Student::on('mysql_students')->findOrFail($id);
+        $guardians = Schema::connection('mysql_students')->hasTable('guardians') ? Guardian::orderBy('id')->get() : collect();
+        return view('students::edit', compact('student', 'guardians'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id) {}
+    public function update(Request $request, $id)
+    {
+        $student = Student::on('mysql_students')->findOrFail($id);
+
+        $validated = $request->validate([
+            'full_name' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'date_of_birth' => ['nullable', 'date'],
+            'gender' => ['nullable', 'in:male,female,other'],
+            'address' => ['nullable', 'string'],
+            'guardian_id' => ['nullable', Rule::exists(Guardian::class, 'id')],
+            'class' => ['nullable', 'string', 'max:50'],
+            'section' => ['nullable', 'string', 'max:50'],
+            'enrollment_date' => ['nullable', 'date'],
+        ]);
+
+        $columns = Schema::connection('mysql_students')->getColumnListing('students');
+        $data = array_intersect_key($validated, array_flip($columns));
+
+        $needsSplit = (in_array('first_name', $columns, true) && ! isset($data['first_name']))
+            || (in_array('last_name', $columns, true) && ! isset($data['last_name']));
+        if ($needsSplit) {
+            $parts = preg_split('/\s+/', trim($validated['full_name'] ?? ''), 2);
+            if (in_array('first_name', $columns, true)) {
+                $data['first_name'] = $parts[0] ?? '';
+            }
+            if (in_array('last_name', $columns, true)) {
+                $data['last_name'] = $parts[1] ?? '';
+            }
+        }
+
+        $student->update($data);
+
+        return redirect()->route('students.index')->with('success', 'Student updated successfully.');
+    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) {}
+    public function destroy($id)
+    {
+        $student = Student::on('mysql_students')->findOrFail($id);
+        $student->delete();
+        return redirect()->route('students.index')->with('success', 'Student deleted successfully.');
+    }
 }

@@ -28,8 +28,8 @@
     <aside class="hidden lg:flex lg:flex-col lg:w-56 lg:fixed lg:inset-y-0 lg:z-30 bg-white border-r border-ink-200/90">
         <div class="flex items-center gap-2.5 px-4 h-14 border-b border-ink-200/80 shrink-0">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 min-w-0">
-                <div class="w-8 h-8 rounded-lg bg-ink-800 flex items-center justify-center text-white text-sm font-semibold shrink-0">H</div>
-                <span class="font-semibold text-ink-900 text-sm truncate" title="Higher order component">Higher order component</span>
+                <div class="w-8 h-8 rounded-lg bg-ink-800 flex items-center justify-center text-white text-sm font-semibold shrink-0">P</div>
+                <span class="font-semibold text-ink-900 text-sm truncate" title="PMRU">PMRU</span>
             </a>
         </div>
         <nav class="flex-1 px-3 py-4 space-y-0.5">
@@ -38,7 +38,7 @@
                 Dashboard
             </a>
             @if(Route::has('students.index'))
-            <a href="{{ route('students.index') }}" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors {{ request()->routeIs('students.index') ? 'text-ink-900 bg-ink-100' : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100' }}">
+            <a href="{{ route('students.index') }}" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors {{ request()->routeIs('students.index') || request()->routeIs('students.edit') || request()->routeIs('students.show') ? 'text-ink-900 bg-ink-100' : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100' }}">
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 Students
             </a>
@@ -70,13 +70,13 @@
     <header class="lg:hidden bg-white border-b border-ink-200/90 sticky top-0 z-20 w-full">
         <div class="px-4 sm:px-6 h-14 flex items-center justify-between">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-ink-800 flex items-center justify-center text-white text-sm font-semibold">H</div>
-                <span class="font-semibold text-ink-900 text-sm">Higher order component</span>
+                <div class="w-8 h-8 rounded-lg bg-ink-800 flex items-center justify-center text-white text-sm font-semibold">P</div>
+                <span class="font-semibold text-ink-900 text-sm">PMRU</span>
             </a>
             <nav class="flex items-center gap-1">
                 <a href="{{ route('dashboard') }}" class="px-3 py-1.5 text-sm font-medium rounded-md {{ request()->routeIs('dashboard') ? 'text-ink-900 bg-ink-100' : 'text-ink-600 hover:bg-ink-100' }}">Dashboard</a>
                 @if(Route::has('students.index'))
-                <a href="{{ route('students.index') }}" class="px-3 py-1.5 text-sm font-medium rounded-md {{ request()->routeIs('students.*') ? 'text-ink-900 bg-ink-100' : 'text-ink-600 hover:bg-ink-100' }}">Students</a>
+                <a href="{{ route('students.index') }}" class="px-3 py-1.5 text-sm font-medium rounded-md {{ request()->routeIs('students.index') || request()->routeIs('students.edit') || request()->routeIs('students.show') ? 'text-ink-900 bg-ink-100' : 'text-ink-600 hover:bg-ink-100' }}">Students</a>
                 @endif
             </nav>
             @auth

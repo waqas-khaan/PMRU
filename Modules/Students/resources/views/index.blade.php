@@ -32,15 +32,24 @@
                             <th class="px-4 py-2 text-left font-medium text-ink-700">Email</th>
                             <th class="px-4 py-2 text-left font-medium text-ink-700">Class</th>
                             <th class="px-4 py-2 text-left font-medium text-ink-700">Phone</th>
+                            <th class="px-4 py-2 text-right font-medium text-ink-700">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-ink-100">
                         @foreach($students as $student)
                             <tr>
-                                <td class="px-4 py-2 font-medium text-ink-900">{{ $student->name }}</td>
+                                <td class="px-4 py-2 font-medium text-ink-900"><a href="{{ route('students.show', $student->id) }}" class="text-accent-600 hover:text-accent-700 hover:underline">{{ $student->name }}</a></td>
                                 <td class="px-4 py-2 text-ink-600">{{ $student->email ?? '—' }}</td>
                                 <td class="px-4 py-2 text-ink-600">{{ $student->class ? $student->class . ($student->section ? ' ' . $student->section : '') : '—' }}</td>
                                 <td class="px-4 py-2 text-ink-600">{{ $student->phone ?? '—' }}</td>
+                                <td class="px-4 py-2 text-right">
+                                    <a href="{{ route('students.edit', $student->id) }}" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-ink-700 bg-ink-100 hover:bg-ink-200 rounded-md mr-1">Edit</a>
+                                    <form action="{{ route('students.destroy', $student->id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this student? This cannot be undone.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-md">Delete</button>
+                                    </form>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
