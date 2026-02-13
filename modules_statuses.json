@@ -1,5 +1,6 @@
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     "Auth": true
 =======
 <<<<<<< HEAD
@@ -9,4 +10,7 @@
     "Auth": true
 >>>>>>> 6058a23 (Updated Students module routes, fixed 404, prepared for Auth integration)
 >>>>>>> 01003fd (Test)
+=======
+    "Auth": true
+>>>>>>> 59d9375 (Auth Modules)
 }

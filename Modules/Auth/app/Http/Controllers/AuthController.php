@@ -2,55 +2,82 @@
 
 namespace Modules\Auth\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Modules\Auth\Models\User;
+use Modules\Auth\Models\Role;
 
 class AuthController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // Login page
+    public function showLoginForm()
     {
-        return view('auth::index');
+        return view('auth::login');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // Handle login
+    public function login(Request $request)
     {
-        return view('auth::create');
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if (Auth::attempt($request->only('email', 'password'))) {
+            $request->session()->regenerate();
+            return redirect()->route('auth.dashboard'); // redirect after login
+        }
+
+        return back()->withErrors(['email' => 'Invalid credentials']);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
+    // Logout
+    public function logout(Request $request)
     {
-        return view('auth::show');
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('auth.login');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
+    // Registration page
+    public function showRegisterForm()
     {
-        return view('auth::edit');
+        $roles = Role::all();
+        return view('auth::register', compact('roles'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
+    // Handle registration
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => ['required', 'email', Rule::unique(User::class, 'email')],
+            'password' => 'required|confirmed|min:6',
+            'role_id' => ['required', Rule::exists(Role::class, 'id')]
+        ]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
+        $user = User::create([
+            'name' => $request->name,
+            'email'=> $request->email,
+            'password'=> Hash::make($request->password)
+        ]);
+
+        // Attach role
+        $user->roles()->sync([$request->role_id]);
+
+        // Auto-login after registration (optional)
+        Auth::login($user);
+
+        return redirect()->route('auth.dashboard')->with('success', 'User registered successfully');
+    }
+
+    // Dashboard
+    public function dashboard()
+    {
+        return view('auth::dashboard');
+    }
 }

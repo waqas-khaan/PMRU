@@ -19,16 +19,14 @@ class AuthServiceProvider extends ServiceProvider
     /**
      * Boot the application events.
      */
-    public function boot(): void
-    {
-        $this->registerCommands();
-        $this->registerCommandSchedules();
-        $this->registerTranslations();
-        $this->registerConfig();
-        $this->registerViews();
-        $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
-    }
-
+ public function boot(): void
+{
+    // Routes are loaded by RouteServiceProvider with 'web' middleware
+    $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+    $this->registerViews();
+    $this->registerConfig();
+    $this->registerTranslations();
+}
     /**
      * Register the service provider.
      */
