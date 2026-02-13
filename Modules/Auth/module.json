@@ -1,7 +1,7 @@
 {
     "name": "Auth",
     "alias": "auth",
-    "description": "",
+    "description": "Authentication module for login, register and logout",
     "keywords": [],
     "priority": 0,
     "providers": [

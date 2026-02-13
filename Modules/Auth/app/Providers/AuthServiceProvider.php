@@ -19,20 +19,21 @@ class AuthServiceProvider extends ServiceProvider
     /**
      * Boot the application events.
      */
- public function boot(): void
-{
-    // Routes are loaded by RouteServiceProvider with 'web' middleware
-    $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
-    $this->registerViews();
-    $this->registerConfig();
-    $this->registerTranslations();
-}
+    public function boot(): void
+    {
+        $this->registerCommands();
+        $this->registerCommandSchedules();
+        $this->registerTranslations();
+        $this->registerConfig();
+        $this->registerViews();
+        $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+    }
+
     /**
      * Register the service provider.
      */
     public function register(): void
     {
-        $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
     }
 
@@ -49,10 +50,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected function registerCommandSchedules(): void
     {
-        // $this->app->booted(function () {
-        //     $schedule = $this->app->make(Schedule::class);
-        //     $schedule->command('inspire')->hourly();
-        // });
+        //
     }
 
     /**
@@ -86,17 +84,13 @@ class AuthServiceProvider extends ServiceProvider
                     $config = str_replace($configPath.DIRECTORY_SEPARATOR, '', $file->getPathname());
                     $config_key = str_replace([DIRECTORY_SEPARATOR, '.php'], ['.', ''], $config);
                     $segments = explode('.', $this->nameLower.'.'.$config_key);
-
-                    // Remove duplicated adjacent segments
                     $normalized = [];
                     foreach ($segments as $segment) {
                         if (end($normalized) !== $segment) {
                             $normalized[] = $segment;
                         }
                     }
-
                     $key = ($config === 'config.php') ? $this->nameLower : implode('.', $normalized);
-
                     $this->publishes([$file->getPathname() => config_path($config)], 'config');
                     $this->merge_config_from($file->getPathname(), $key);
                 }
@@ -104,14 +98,10 @@ class AuthServiceProvider extends ServiceProvider
         }
     }
 
-    /**
-     * Merge config from the given path recursively.
-     */
     protected function merge_config_from(string $path, string $key): void
     {
         $existing = config($key, []);
         $module_config = require $path;
-
         config([$key => array_replace_recursive($existing, $module_config)]);
     }
 
@@ -124,15 +114,11 @@ class AuthServiceProvider extends ServiceProvider
         $sourcePath = module_path($this->name, 'resources/views');
 
         $this->publishes([$sourcePath => $viewPath], ['views', $this->nameLower.'-module-views']);
-
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        Blade::componentNamespace(config('modules.namespace').'\\' . $this->name . '\\View\\Components', $this->nameLower);
+        Blade::componentNamespace(config('modules.namespace').'\\'.$this->name.'\\View\\Components', $this->nameLower);
     }
 
-    /**
-     * Get the services provided by the provider.
-     */
     public function provides(): array
     {
         return [];
@@ -146,7 +132,6 @@ class AuthServiceProvider extends ServiceProvider
                 $paths[] = $path.'/modules/'.$this->nameLower;
             }
         }
-
         return $paths;
     }
 }
