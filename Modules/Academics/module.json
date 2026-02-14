@@ -1,0 +1,1 @@
+{"name":"Academics","alias":"academics","description":"Academic years, terms, classes, sections, subjects, timetable","keywords":[],"priority":0,"providers":["Modules\\Academics\\Providers\\AcademicsServiceProvider"],"files":[]}
