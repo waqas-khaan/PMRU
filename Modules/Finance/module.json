@@ -1,1 +1,0 @@
-{"name":"Finance","alias":"finance","description":"Finance and exams (fees, payments, exam results)","keywords":[],"priority":0,"providers":["Modules\\Finance\\Providers\\FinanceServiceProvider"],"files":[]}
