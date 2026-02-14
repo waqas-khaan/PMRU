@@ -10,6 +10,7 @@ class Student extends Model
     protected $connection = 'mysql_students';
 
     protected $fillable = [
+        'name',
         'first_name',
         'last_name',
         'full_name',
@@ -39,10 +40,14 @@ class Student extends Model
 
     /**
      * Single display name for the whole app: matches the "Full name" form field.
-     * Prefer full_name, otherwise first_name + last_name (for DBs that only have those).
+     * Prefer name column, then full_name, then first_name + last_name.
      */
     public function getNameAttribute(): string
     {
+        $name = $this->attributes['name'] ?? null;
+        if ($name !== null && $name !== '') {
+            return $name;
+        }
         $full = $this->attributes['full_name'] ?? null;
         if ($full !== null && $full !== '') {
             return $full;

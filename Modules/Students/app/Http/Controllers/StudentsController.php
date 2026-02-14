@@ -26,7 +26,9 @@ class StudentsController extends Controller
     public function create()
     {
         $guardians = Schema::connection('mysql_students')->hasTable('guardians') ? Guardian::orderBy('id')->get() : collect();
-        return view('students::create', compact('guardians'));
+        $schoolClasses = $this->getAcademicsClasses();
+        $sections = $this->getAcademicsSections();
+        return view('students::create', compact('guardians', 'schoolClasses', 'sections'));
     }
 
     /**
@@ -44,11 +46,21 @@ class StudentsController extends Controller
             'guardian_id' => ['nullable', Rule::exists(Guardian::class, 'id')],
             'class' => ['nullable', 'string', 'max:50'],
             'section' => ['nullable', 'string', 'max:50'],
+            'class_section' => ['nullable', 'string', 'max:255'],
             'enrollment_date' => ['nullable', 'date'],
         ]);
 
         $columns = Schema::connection('mysql_students')->getColumnListing('students');
         $data = array_intersect_key($validated, array_flip($columns));
+
+        if ($request->filled('class_section') && str_contains($request->class_section, '|')) {
+            [$data['class'], $data['section']] = array_pad(explode('|', $request->class_section, 2), 2, null);
+        }
+
+        // If table has name (required), use full_name from form
+        if (in_array('name', $columns, true) && empty($data['name']) && ! empty($validated['full_name'])) {
+            $data['name'] = trim($validated['full_name']);
+        }
 
         // If table has first_name/last_name (required), derive from full_name so insert doesn't fail
         $needsSplit = (in_array('first_name', $columns, true) && ! isset($data['first_name']))
@@ -84,7 +96,9 @@ class StudentsController extends Controller
     {
         $student = Student::on('mysql_students')->findOrFail($id);
         $guardians = Schema::connection('mysql_students')->hasTable('guardians') ? Guardian::orderBy('id')->get() : collect();
-        return view('students::edit', compact('student', 'guardians'));
+        $schoolClasses = $this->getAcademicsClasses();
+        $sections = $this->getAcademicsSections();
+        return view('students::edit', compact('student', 'guardians', 'schoolClasses', 'sections'));
     }
 
     /**
@@ -104,11 +118,21 @@ class StudentsController extends Controller
             'guardian_id' => ['nullable', Rule::exists(Guardian::class, 'id')],
             'class' => ['nullable', 'string', 'max:50'],
             'section' => ['nullable', 'string', 'max:50'],
+            'class_section' => ['nullable', 'string', 'max:255'],
             'enrollment_date' => ['nullable', 'date'],
         ]);
 
         $columns = Schema::connection('mysql_students')->getColumnListing('students');
         $data = array_intersect_key($validated, array_flip($columns));
+
+        if ($request->filled('class_section') && str_contains($request->class_section, '|')) {
+            [$data['class'], $data['section']] = array_pad(explode('|', $request->class_section, 2), 2, null);
+        }
+
+        // If table has name (required), use full_name from form
+        if (in_array('name', $columns, true) && empty($data['name']) && ! empty($validated['full_name'])) {
+            $data['name'] = trim($validated['full_name']);
+        }
 
         $needsSplit = (in_array('first_name', $columns, true) && ! isset($data['first_name']))
             || (in_array('last_name', $columns, true) && ! isset($data['last_name']));
@@ -135,5 +159,35 @@ class StudentsController extends Controller
         $student = Student::on('mysql_students')->findOrFail($id);
         $student->delete();
         return redirect()->route('students.index')->with('success', 'Student deleted successfully.');
+    }
+
+    /**
+     * Get classes from Academics DB (mysql_academics). Returns empty collection if unavailable.
+     */
+    protected function getAcademicsClasses(): \Illuminate\Support\Collection
+    {
+        try {
+            if (! Schema::connection('mysql_academics')->hasTable('classes')) {
+                return collect();
+            }
+            return \Modules\Academics\Models\SchoolClass::orderBy('level')->orderBy('name')->get();
+        } catch (\Throwable $e) {
+            return collect();
+        }
+    }
+
+    /**
+     * Get sections (with class) from Academics DB. Returns empty collection if unavailable.
+     */
+    protected function getAcademicsSections(): \Illuminate\Support\Collection
+    {
+        try {
+            if (! Schema::connection('mysql_academics')->hasTable('sections')) {
+                return collect();
+            }
+            return \Modules\Academics\Models\Section::with('schoolClass')->orderBy('class_id')->orderBy('name')->get();
+        } catch (\Throwable $e) {
+            return collect();
+        }
     }
 }
