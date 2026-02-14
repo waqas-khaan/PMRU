@@ -1,0 +1,7 @@
+#!/bin/sh
+# After pull/merge: create .env from .env.example if missing (so local config is not "lost")
+if [ ! -f .env ] && [ -f .env.example ]; then
+    cp .env.example .env
+    echo "[post-merge] Created .env from .env.example. Please set APP_KEY, DB_*, and other values."
+fi
+exit 0

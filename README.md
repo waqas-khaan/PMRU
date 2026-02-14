@@ -42,6 +42,16 @@ We would like to extend our thanks to the following sponsors for funding Laravel
 - **[Redberry](https://redberry.international/laravel-development)**
 - **[Active Logic](https://activelogic.com)**
 
+## Local setup and preserving .env after merge
+
+The `.env` file is not in Git (for security). After a merge to `main` or a fresh clone, restore it:
+
+- **Option A:** Run `sh scripts/ensure-env.sh` (creates `.env` from `.env.example` if missing), then `php artisan key:generate` and set your DB/APP_URL.
+- **Option B:** Use the Git hook so `.env` is recreated automatically after `git pull`:  
+  `git config core.hooksPath .githooks` (once per clone).
+
+See [docs/LOCAL_CHANGES.md](docs/LOCAL_CHANGES.md) for details and how to avoid losing local changes when pushing/merging.
+
 ## Contributing
 
 Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
