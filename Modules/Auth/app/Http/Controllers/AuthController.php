@@ -3,10 +3,13 @@
 namespace Modules\Auth\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Modules\Auth\Models\Role;
+use Modules\Auth\Models\User;
 
 class AuthController extends Controller
 {
@@ -22,9 +25,14 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'));
+        try {
+            if (Auth::attempt($credentials, $request->boolean('remember'))) {
+                $request->session()->regenerate();
+                return $this->redirectAfterLogin($request);
+            }
+        } catch (\Throwable $e) {
+            // Stored password may not be a valid bcrypt hash (e.g. plain text from manual SQL insert)
+            report($e);
         }
 
         return back()->withErrors([
@@ -34,26 +42,68 @@ class AuthController extends Controller
 
     public function showRegisterForm()
     {
-        return view('auth::register');
+        $roles = Schema::connection('mysql_auth')->hasTable('roles')
+            ? Role::orderBy('name')->get()
+            : collect();
+
+        return view('auth::register', compact('roles'));
     }
 
     public function register(Request $request)
     {
-        $validated = $request->validate([
+        $rolesExist = Schema::connection('mysql_auth')->hasTable('roles');
+
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)],
             'password' => ['required', 'confirmed', Password::defaults()],
+        ];
+
+        if ($rolesExist) {
+            $rules['role'] = ['required', Rule::exists(Role::class, 'id')];
+        }
+
+        $validated = $request->validate($rules, [
+            'role.required' => 'Please select a role.',
+            'role.exists' => 'The selected role is invalid.',
         ]);
 
-        $user = User::create([
+        $userData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'],
-        ]);
+        ];
+        if ($rolesExist && ! empty($validated['role'])) {
+            $userData['role_id'] = $validated['role'];
+        }
+
+        $user = User::create($userData);
+
+        if ($rolesExist && ! empty($validated['role'])) {
+            $user->roles()->attach($validated['role']);
+        }
 
         Auth::login($user);
 
         return redirect(route('dashboard'));
+    }
+
+    /**
+     * Role-based redirect after login: respect intended URL only if the user's role can access it.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function redirectAfterLogin(Request $request)
+    {
+        /** @var \Modules\Auth\Models\User $user */
+        $user = Auth::user();
+        $intended = $request->session()->pull('url.intended');
+
+        if ($intended && $user->canAccessPath($intended)) {
+            return redirect()->to($intended);
+        }
+
+        return redirect()->route('dashboard');
     }
 
     public function logout(Request $request)

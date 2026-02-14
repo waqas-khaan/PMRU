@@ -10,7 +10,7 @@ use Modules\Academics\Http\Controllers\SubjectController;
 use Modules\Academics\Http\Controllers\TermController;
 use Modules\Academics\Http\Controllers\TimetableSlotController;
 
-Route::middleware(['web'])->prefix('academics')->name('academics.')->group(function () {
+Route::middleware(['web', 'auth', 'role:Admin,Teacher'])->prefix('academics')->name('academics.')->group(function () {
     Route::get('/', [AcademicsController::class, 'index'])->name('index');
 
     Route::resource('academic-years', AcademicYearController::class)->parameters(['academic-years' => 'academicYear']);

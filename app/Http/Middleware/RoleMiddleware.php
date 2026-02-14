@@ -36,7 +36,7 @@ class RoleMiddleware
         if (! $hasRole) {
             // You can change this to abort(403) if you prefer
             return redirect()
-                ->route('auth.dashboard')
+                ->route('dashboard')
                 ->with('error', 'You are not authorized to access that page.');
         }
 
