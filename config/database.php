@@ -103,6 +103,46 @@ return [
             ]) : [],
         ],
 
+        'mysql_academics' => [
+            'driver' => 'mysql',
+            'url' => env('DB_ACADEMICS_URL'),
+            'host' => env('DB_ACADEMICS_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('DB_ACADEMICS_PORT', env('DB_PORT', '3306')),
+            'database' => env('DB_ACADEMICS_DATABASE', 'school_academics_db'),
+            'username' => env('DB_ACADEMICS_USERNAME', env('DB_USERNAME', 'root')),
+            'password' => env('DB_ACADEMICS_PASSWORD', env('DB_PASSWORD', '')),
+            'unix_socket' => env('DB_ACADEMICS_SOCKET', env('DB_SOCKET', '')),
+            'charset' => env('DB_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'mysql_finance' => [
+            'driver' => 'mysql',
+            'url' => env('DB_FINANCE_URL'),
+            'host' => env('DB_FINANCE_HOST', env('DB_HOST', '127.0.0.1')),
+            'port' => env('DB_FINANCE_PORT', env('DB_PORT', '3306')),
+            'database' => env('DB_FINANCE_DATABASE', 'school_finance_exams_db'),
+            'username' => env('DB_FINANCE_USERNAME', env('DB_USERNAME', 'root')),
+            'password' => env('DB_FINANCE_PASSWORD', env('DB_PASSWORD', '')),
+            'unix_socket' => env('DB_FINANCE_SOCKET', env('DB_SOCKET', '')),
+            'charset' => env('DB_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),

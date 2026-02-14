@@ -31,7 +31,9 @@
             "Database\\Seeders\\": "database/seeders/",
             "Modules\\": "Modules/",
             "Modules\\Students\\": "Modules/Students/app/",
-            "Modules\\Auth\\": "Modules/Auth/app/"
+            "Modules\\Auth\\": "Modules/Auth/app/",
+            "Modules\\Finance\\": "Modules/Finance/app/",
+            "Modules\\Academics\\": "Modules/Academics/app/"
         }
     },
     "autoload-dev": {
