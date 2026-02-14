@@ -58,13 +58,36 @@
                 </div>
                 <div>
                     <label for="class" class="block text-sm font-medium text-ink-700 mb-1">Class</label>
-                    <input type="text" name="class" id="class" value="{{ old('class', $student->class) }}" placeholder="e.g. 10"
-                           class="w-full px-3 py-2 border border-ink-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500">
+                    @if(isset($schoolClasses) && $schoolClasses->isNotEmpty())
+                        <select name="class" id="class" class="w-full px-3 py-2 border border-ink-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500">
+                            <option value="">— None —</option>
+                            @foreach($schoolClasses as $c)
+                                <option value="{{ $c->name }}" {{ old('class', $student->class) === $c->name ? 'selected' : '' }}>{{ $c->name }}</option>
+                            @endforeach
+                        </select>
+                    @else
+                        <input type="text" name="class" id="class" value="{{ old('class', $student->class) }}" placeholder="e.g. 10"
+                               class="w-full px-3 py-2 border border-ink-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500">
+                    @endif
                 </div>
                 <div>
-                    <label for="section" class="block text-sm font-medium text-ink-700 mb-1">Section</label>
-                    <input type="text" name="section" id="section" value="{{ old('section', $student->section) }}" placeholder="e.g. A"
-                           class="w-full px-3 py-2 border border-ink-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500">
+                    <label for="class_section" class="block text-sm font-medium text-ink-700 mb-1">Section</label>
+                    @if(isset($sections) && $sections->isNotEmpty())
+                        @php
+                            $currentClassSection = old('class_section', ($student->class && $student->section) ? $student->class.'|'.$student->section : '');
+                        @endphp
+                        <input type="hidden" name="section" value="">
+                        <select name="class_section" id="class_section" class="w-full px-3 py-2 border border-ink-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500">
+                            <option value="">— None —</option>
+                            @foreach($sections as $sec)
+                                <option value="{{ $sec->schoolClass->name ?? '' }}|{{ $sec->name }}" {{ $currentClassSection === ($sec->schoolClass->name ?? '').'|'.$sec->name ? 'selected' : '' }}>{{ $sec->schoolClass->name ?? '?' }} – {{ $sec->name }}</option>
+                            @endforeach
+                        </select>
+                        <p class="mt-0.5 text-xs text-ink-500">From Academics (Class – Section). Selecting sets both Class and Section.</p>
+                    @else
+                        <input type="text" name="section" id="section" value="{{ old('section', $student->section) }}" placeholder="e.g. A"
+                               class="w-full px-3 py-2 border border-ink-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500">
+                    @endif
                 </div>
                 <div class="sm:col-span-2">
                     <label for="enrollment_date" class="block text-sm font-medium text-ink-700 mb-1">Enrollment date</label>
