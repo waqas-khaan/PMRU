@@ -1,1 +1,7 @@
-{"Auth":true,"Students":true,"Academics":true,"Finance":true}
+{
+    "Auth": true,
+    "Students": true,
+    "Academics": true,
+    "Finance": true,
+    "Hostel": true
+}
