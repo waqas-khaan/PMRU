@@ -10,7 +10,13 @@ return new class extends Migration
 
     public function up(): void
     {
-        Schema::connection($this->connection)->create('classes', function (Blueprint $table) {
+        $schema = Schema::connection($this->connection);
+
+        if ($schema->hasTable('classes')) {
+            return;
+        }
+
+        $schema->create('classes', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->unsignedInteger('level')->nullable()->comment('Numeric order e.g. 1,2,3');

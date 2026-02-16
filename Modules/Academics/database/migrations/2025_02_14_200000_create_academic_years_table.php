@@ -10,7 +10,15 @@ return new class extends Migration
 
     public function up(): void
     {
-        Schema::connection($this->connection)->create('academic_years', function (Blueprint $table) {
+        $schema = Schema::connection($this->connection);
+
+        // If the table already exists (e.g. created manually or on a previous deploy),
+        // don't fail the migration run.
+        if ($schema->hasTable('academic_years')) {
+            return;
+        }
+
+        $schema->create('academic_years', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->date('start_date');

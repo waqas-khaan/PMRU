@@ -10,7 +10,13 @@ return new class extends Migration
 
     public function up(): void
     {
-        Schema::connection($this->connection)->create('timetable_slots', function (Blueprint $table) {
+        $schema = Schema::connection($this->connection);
+
+        if ($schema->hasTable('timetable_slots')) {
+            return;
+        }
+
+        $schema->create('timetable_slots', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('class_id');
             $table->unsignedBigInteger('section_id');
