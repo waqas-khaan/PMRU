@@ -42,9 +42,7 @@
         }
     },
     "scripts": {
-        "pre-autoload-dump": [
-            "@php -r \"$d='bootstrap/cache'; if (!is_dir($d)) mkdir($d, 0777, true); if (is_dir($d) && !is_writable($d)) @chmod($d, 0777);\""
-        ],
+      
         "setup": [
             "composer install",
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
