@@ -66,6 +66,13 @@
                 Finance &amp; Exams
             </a>
             @endif
+            {{-- Hostel: Admin only --}}
+            @if(auth()->user() && auth()->user()->hasRole('Admin') && Route::has('hostel.index'))
+            <a href="{{ route('hostel.index') }}" class="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors {{ request()->routeIs('hostel.*') ? 'text-ink-900 bg-ink-100' : 'text-ink-600 hover:text-ink-900 hover:bg-ink-100' }}">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21V10a1 1 0 01.447-.832l8-5.333a1 1 0 011.106 0l8 5.333A1 1 0 0121 10v11M7 21v-7a1 1 0 011-1h8a1 1 0 011 1v7"/></svg>
+                Hostel
+            </a>
+            @endif
         </nav>
         <div class="p-3 border-t border-ink-200/80 shrink-0">
             @auth
@@ -103,6 +110,9 @@
                 @endif
                 @if(auth()->user() && auth()->user()->hasRole('Admin'))
                 <a href="{{ Route::has('finance.index') ? route('finance.index') : url('/finance') }}" class="px-3 py-1.5 text-sm font-medium rounded-md {{ request()->routeIs('finance.*') ? 'text-ink-900 bg-ink-100' : 'text-ink-600 hover:bg-ink-100' }}">Finance</a>
+                @endif
+                @if(auth()->user() && auth()->user()->hasRole('Admin') && Route::has('hostel.index'))
+                <a href="{{ route('hostel.index') }}" class="px-3 py-1.5 text-sm font-medium rounded-md {{ request()->routeIs('hostel.*') ? 'text-ink-900 bg-ink-100' : 'text-ink-600 hover:bg-ink-100' }}">Hostel</a>
                 @endif
             </nav>
             @auth
