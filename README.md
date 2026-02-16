@@ -52,6 +52,15 @@ The `.env` file is not in Git (for security). After a merge to `main` or a fresh
 
 See [docs/LOCAL_CHANGES.md](docs/LOCAL_CHANGES.md) for details and how to avoid losing local changes when pushing/merging.
 
+## Permissions (so all developers can edit easily)
+
+After clone or if you see "directory must be present and writable", run the fix-permissions script so `bootstrap/cache` and `storage` are writable by all:
+
+- **Mac/Linux:** `sh scripts/fix-permissions.sh`
+- **Windows (PowerShell):** `.\scripts\fix-permissions.ps1`
+
+Then run `composer install` as usual.
+
 ## Contributing
 
 Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).

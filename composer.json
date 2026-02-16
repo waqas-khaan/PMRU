@@ -43,7 +43,7 @@
     },
     "scripts": {
         "pre-autoload-dump": [
-            "@php -r \"if (!is_dir('bootstrap/cache')) { mkdir('bootstrap/cache', 0755, true); }\""
+            "@php -r \"$d='bootstrap/cache'; if (!is_dir($d)) mkdir($d, 0777, true); if (is_dir($d) && !is_writable($d)) @chmod($d, 0777);\""
         ],
         "setup": [
             "composer install",
