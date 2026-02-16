@@ -30,7 +30,7 @@
             @if($roles->isEmpty())
                 <div class="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200 text-sm text-amber-800">
                     <p class="font-medium">Role-based registration not set up yet.</p>
-                    <p class="mt-1">Run <code class="bg-amber-100 px-1 rounded">php artisan migrate</code> then seed roles to enable role selection.</p>
+                    <p class="mt-1">Run <code class="bg-amber-100 px-1 rounded">php artisan migrate</code> to enable role selection.</p>
                 </div>
             @endif
 

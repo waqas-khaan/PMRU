@@ -13,6 +13,34 @@ use Modules\Auth\Models\User;
 
 class AuthController extends Controller
 {
+    /**
+     * Ensure default roles exist so register form can show role selection.
+     */
+    protected function ensureDefaultRolesExist(): void
+    {
+        if (! Schema::connection('mysql_auth')->hasTable('roles')) {
+            return;
+        }
+
+        if (Role::query()->count() > 0) {
+            return;
+        }
+
+        $roles = [
+            ['name' => 'Admin', 'description' => 'Administrator with full access'],
+            ['name' => 'Teacher', 'description' => 'Teaching staff'],
+            ['name' => 'Student', 'description' => 'Student user'],
+            ['name' => 'Parent', 'description' => 'Parent or guardian'],
+        ];
+
+        foreach ($roles as $role) {
+            Role::firstOrCreate(
+                ['name' => $role['name']],
+                ['description' => $role['description']]
+            );
+        }
+    }
+
     public function showLoginForm()
     {
         return view('auth::login');
@@ -42,6 +70,8 @@ class AuthController extends Controller
 
     public function showRegisterForm()
     {
+        $this->ensureDefaultRolesExist();
+
         $roles = Schema::connection('mysql_auth')->hasTable('roles')
             ? Role::orderBy('name')->get()
             : collect();
@@ -51,6 +81,8 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        $this->ensureDefaultRolesExist();
+
         $rolesExist = Schema::connection('mysql_auth')->hasTable('roles');
 
         $rules = [
